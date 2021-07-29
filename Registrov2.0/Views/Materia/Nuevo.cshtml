@@ -1,0 +1,199 @@
+@model Registrov2._0.Models.ViewModels.MateriaModeloNuevo
+@{
+    ViewBag.Title = "Nueva Materia";
+}
+
+<h2 class="tituloPage">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Nuevo", "Materia", FormMethod.Post))
+{
+    <div class="row ">
+        <div class="formTable">
+            <div class="row form-group">
+                <div class="col-md-12 ">
+                    @Html.LabelFor(d => d.InsertarMateria.Nombre)
+                    @Html.TextBoxFor(d => d.InsertarMateria.Nombre, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(d => d.InsertarMateria.Nombre, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Periodo</label>
+                    @Html.DropDownList("Periodos", Model.Periodos, new { @class = "form-control", id = "cboPeriodos" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Carrera</label>
+                    <select id="cboCarreras" name="cboCarrera" class="form-control"></select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Semestre</label>
+                    <select id="cboSemestre" name="cboSemestre" class="form-control"></select>
+                    @Html.TextBoxFor(d => d.InsertarMateria.IdSemestre, "", new { @class = "form-control d-none hidden", id = "txtSemestreSeleccionado" })
+                    @Html.ValidationMessageFor(d => d.InsertarMateria.IdSemestre, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Docente</label>
+                    @Html.DropDownListFor(d => d.InsertarMateria.IdDocente, Model.Docentes, new { @class = "form-control", id = "cboDocentes" })
+                    @Html.ValidationMessageFor(d => d.InsertarMateria.IdSemestre, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center; padding:5px">
+                <div class="col-md-12" style="">
+                    <input type="submit" class="btn btn-primary btn-block" value="Guardar" />
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center; padding:5px">
+                <div class="col-md-12" style="">
+                    <a class="btn btn-danger btn-block" href="~/Materia/"> Cancelar </a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+}
+
+<script>
+
+    //cojo variables
+    //combo de periodos
+    var cboPeriodos = document.getElementById("cboPeriodos");
+    //agrego el evento a change para consultar las carreras del epriodo
+    cboPeriodos.addEventListener("change", consultarCarrerarxPerio);
+
+
+    //combo de Carreras
+    var cboCarreras = document.getElementById("cboCarreras");
+    //agrego el evento consultar semestres cuando cambie la carrera
+    cboCarreras.addEventListener("change", consultarSemestresxCarrera);
+
+
+    //combo semestre
+    var cboSemestre = document.getElementById("cboSemestre");
+    //agrego el evento consultar materias x semestre en el change
+    cboSemestre.addEventListener("change", actulizarSemestreSelecionadaChange);
+
+    var txtSemestreSeleccionado = document.getElementById("txtSemestreSeleccionado");
+    //txtSemestreSeleccionado.addEventListener("change", actulizarSemestreSelecionadaChange);
+
+
+    //ejecuto la funcion de consultarCarrera
+    consultarCarrerarxPerio();
+
+    function consultarCarrerarxPerio() {
+        //debo llenar el dropdownlist
+
+        fetch("@Url.Content("~/Carrera/getCarrerasPorPeriodo")" + "?idPeriodo=" + cboPeriodos.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                //limpio el combo
+                cboCarreras.innerHTML = "";
+
+                if (data.length != 0) {
+
+                    //lleno el combo de carreras
+                    data.forEach(function (element) {
+                        agregarOpcionAlSelect(element.Nombre, element.Id, cboCarreras);
+                    });
+
+                    //aqui consulto enseguida y lleno la tabla
+                    //otro fectch
+
+
+                    consultarSemestresxCarrera();
+
+                } else {
+                    //mando alerta de no haber respuesta
+                    Swal.fire(
+                        'Alerta!',
+                        'No se encontraron carreras asociadas con el Periodo',
+                        'info'
+                    );
+
+                    agregarOpcionAlSelect("No hay carreras asociadas", null, cboCarreras);
+
+                    //vacio la tabla previamente cargada
+                    semestresTablaBody.innerHTML = `<tr style="text-align:center;">
+                    <td colspan="2" style="padding:20px">
+                        No hay <strong> Semestres </strong>registrados para la carrera seleccionada!
+                    </td>
+                </tr>`;
+                }
+
+            });
+    }
+
+    function consultarSemestresxCarrera() {
+
+        //limpio la tabla
+        cboSemestre.innerHTML = ``;
+
+
+        fetch("@Url.Content("~/Semestre/getSemestresxCarrera")" + "?idCarrera=" + cboCarreras.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                if (data.length != 0) {
+                    actulizarSemestreSelecionada(data[0].Id);
+                    data.forEach(function (element) {
+                        agregarOpcionAlSelect(element.Nombre, element.Id, cboSemestre);
+                    });
+
+                    //consulto y lleno la tabla
+                    //consultarMateriasxSemestre();
+
+                } else {
+                    Swal.fire(
+                        'Alerta!',
+                        'No se encontraron semestres asociadas con la Carrera',
+                        'info'
+                    );
+
+                    agregarOpcionAlSelect("No hay semestres asociadas", null, cboSemestre);
+                    actulizarSemestreSelecionada(null);
+                }
+
+            });
+    }
+
+   
+    function agregarOpcionAlSelect(nombre, value, combo) {
+        let opt = document.createElement("option");
+        opt.appendChild(document.createTextNode(nombre));
+        opt.value = value;
+
+        combo.appendChild(opt);
+    }
+
+    function actulizarSemestreSelecionadaChange() {
+        //console.log(cboCarreras.value);
+        txtSemestreSeleccionado.value = cboSemestre.value;
+    }
+
+
+    function actulizarSemestreSelecionada(idSemestre) {
+        //console.log(idCarrera);
+        txtSemestreSeleccionado.value = idSemestre;
+    }
+
+</script>

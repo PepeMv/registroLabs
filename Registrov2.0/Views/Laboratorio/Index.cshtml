@@ -1,0 +1,165 @@
+@model Registrov2._0.Models.ViewModels.UnionModeloLaboratorioIndex
+
+@{ ViewBag.Title = "Registro de Asistencia";
+}
+
+
+<div class="jumbotron">
+    @if (Model.Laboratorio == null)
+    {<h1 class="display-2">No se encontro Laboratorio.</h1> }
+    else
+    { <h1 class="display-2">@Model.Laboratorio.Nombre</h1>}
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Ingresa tu cedula:</h2>
+            @Html.TextBox("cedula", null, new { @class = "form-control", @type = "number", id = "cedulaRegistro" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" style="padding-top:10px">
+            <p class=""><a href="#" class="btn btn-primary btn-lg p-4 para-padding" id="botonRegistrar">Registrar asistencia &raquo;</a></p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    //tomo el componente de la cedula
+    var txtcedula = document.getElementById("cedulaRegistro");
+    //sera que vale el enter
+    txtcedula.addEventListener("keypress", function (e) {
+        if (e.key === 'Enter') {
+            insertarAsistencia();
+            //console.log("enter");
+        }
+    });
+
+    //tomo el componente del botos de insertar
+    var botonRegistrar = document.getElementById("botonRegistrar");
+    //agregio el evento click
+    botonRegistrar.addEventListener("click", insertarAsistencia);
+
+
+    function insertarAsistencia() {
+        if (@Model.Laboratorio.Id == null ) {
+            Swal.fire(
+                'Error!',
+                'No se encontro un laboratorio para la aplicacion!',
+                'error'
+            );
+            return;
+        }
+
+        fetch("@Url.Content("~/Registro/insertarAsistenciaenRegistro")" + "?cedula=" + txtcedula.value +"&idLaboratorio="+@Model.Laboratorio.Id)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+                if (data.Status == "error" || data.Status == "info") {
+                    Swal.fire({
+                        title: "Error",
+                        icon: data.Status,
+                        html: data.Mensaje
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: data.TipoUsuario === "docente" ? '<strong><h1>Docente</h1></strong>' : '<strong><h1>Estudiante</h1></strong>',
+                    width: 600,
+                    html: ` <div class="col-md-12  text-center">
+        <table class="table table-bordered " style="table-layout:fixed">
+            <thead class="text-center">
+                <tr>
+                    <th scope="col" class="text-center bg-info" colspan="2"> <h3> Informacion </h3> </th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoInformacion">
+                <tr >
+                    <td style="vertical-align:middle" class="bg-success"> <strong> Nombre: </strong> </td>
+                    <td style="vertical-align:middle" class="bg-secondary">${data.NombreUsuario}</td>
+                </tr>
+                <tr >
+                    <td style="vertical-align:middle" class="bg-success"> <strong> Semestre: </strong> </td>
+                    <td style="vertical-align:middle" class="bg-secondary">${data.NombreSemestre}</td>
+                </tr>
+                <tr >
+                    <td style="vertical-align:middle" class="bg-success"> <strong> Materia: </strong> </td>
+                    <td style="vertical-align:middle" class="bg-secondary">${data.NombreMateria}</td>
+                </tr>
+                <tr>
+                    ${ data.TipoUsuario === "docente" ? (`<td style="vertical-align:middle" class="bg-success"> <strong> Tema: </strong> </td>
+                            <td style="vertical-align:middle" class="bg-secondary"><input id="temaInput" class="form-control" value= ${data.TemaRegistro} > </td>` ) : ('')}
+
+                </tr>
+                <tr >
+                    <td style="vertical-align:middle" class="bg-success"> <strong> Observacion:: </strong> </td>
+                    <td style="vertical-align:middle" class="bg-secondary"><input id="observacionInput" class="form-control"  > </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>`,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Asistir!',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+
+                        try {
+                            var tema = document.getElementById('temaInput').value;
+                        } catch {
+                            var tema = "";
+                        }
+                        
+                        var observacion = document.getElementById('observacionInput').value;
+
+                        return fetch("@Url.Content("~/Registro/insertarRegistro")" + `?idRegistro=${data.IdRegistro}&observacion=${observacion}&tipoUsuario=${data.TipoUsuario}&idUsuario=${data.IdUsuario}&tema=${tema}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(response.statusText)
+                                }
+                                return response.json()
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage(
+                                    `Error: ${error}`
+                                )
+                            })
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    //console.log()
+                    if (result.value) {
+                        if (result.value.Status == "success") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: result.value.Mensaje,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: result.value.Mensaje,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    }
+                })
+
+
+            });
+    }
+
+</script>
+

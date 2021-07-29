@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="registroLabsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="carrera">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="50" />
+    <Property Name="idPeriodo" Type="int" />
+  </EntityType>
+  <EntityType Name="detalle_materia">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="idMateria" Type="int" />
+    <Property Name="idEstudiante" Type="int" />
+  </EntityType>
+  <EntityType Name="detalle_registro">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="idRegistro" Type="int" />
+    <Property Name="observacion" Type="varchar" MaxLength="100" />
+    <Property Name="idEstudiante" Type="int" />
+    <Property Name="idDocente" Type="int" />
+  </EntityType>
+  <EntityType Name="docente">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="cedula" Type="varchar" MaxLength="13" />
+    <Property Name="nombre" Type="varchar" MaxLength="500" />
+    <Property Name="apellido" Type="varchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="estudiante">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="cedula" Type="varchar" MaxLength="50" />
+    <Property Name="nombre" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="laboratorio">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="50" />
+    <Property Name="capacidad" Type="int" />
+    <Property Name="subred" Type="int" />
+  </EntityType>
+  <EntityType Name="materia">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="500" />
+    <Property Name="idDocente" Type="int" />
+    <Property Name="idSemestre" Type="int" />
+  </EntityType>
+  <EntityType Name="periodo">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="50" />
+    <Property Name="fechaInicio" Type="date" />
+    <Property Name="fechaFin" Type="date" />
+  </EntityType>
+  <EntityType Name="registro">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="fechaInicio" Type="datetime" />
+    <Property Name="fechaFin" Type="datetime" />
+    <Property Name="tema" Type="varchar" MaxLength="50" />
+    <Property Name="idLaboratorio" Type="int" />
+    <Property Name="observacion" Type="varchar" MaxLength="50" />
+    <Property Name="idMateria" Type="int" />
+  </EntityType>
+  <EntityType Name="semestre">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="50" />
+    <Property Name="idCarrera" Type="int" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" />
+    <Property Name="definition" Type="varbinary(max)" />
+  </EntityType>
+  <EntityType Name="usuario">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="nombre" Type="varchar" MaxLength="70" />
+    <Property Name="mail" Type="varchar" MaxLength="50" />
+    <Property Name="password" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="FK_carrera_periodo">
+    <End Role="periodo" Type="Self.periodo" Multiplicity="0..1" />
+    <End Role="carrera" Type="Self.carrera" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="periodo">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="carrera">
+        <PropertyRef Name="idPeriodo" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_materia_estudiante">
+    <End Role="estudiante" Type="Self.estudiante" Multiplicity="0..1" />
+    <End Role="detalle_materia" Type="Self.detalle_materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="estudiante">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_materia">
+        <PropertyRef Name="idEstudiante" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_materia_materia">
+    <End Role="materia" Type="Self.materia" Multiplicity="0..1" />
+    <End Role="detalle_materia" Type="Self.detalle_materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="materia">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_materia">
+        <PropertyRef Name="idMateria" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_registro_docente">
+    <End Role="docente" Type="Self.docente" Multiplicity="0..1" />
+    <End Role="detalle_registro" Type="Self.detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="docente">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idDocente" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_registro_estudianteRAID">
+    <End Role="estudiante" Type="Self.estudiante" Multiplicity="0..1" />
+    <End Role="detalle_registro" Type="Self.detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="estudiante">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idEstudiante" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_registro_registro">
+    <End Role="registro" Type="Self.registro" Multiplicity="0..1" />
+    <End Role="detalle_registro" Type="Self.detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="registro">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idRegistro" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_materia_docente">
+    <End Role="docente" Type="Self.docente" Multiplicity="0..1" />
+    <End Role="materia" Type="Self.materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="docente">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="materia">
+        <PropertyRef Name="idDocente" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_materia_semestre">
+    <End Role="semestre" Type="Self.semestre" Multiplicity="0..1" />
+    <End Role="materia" Type="Self.materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="semestre">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="materia">
+        <PropertyRef Name="idSemestre" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_registro_laboratorio">
+    <End Role="laboratorio" Type="Self.laboratorio" Multiplicity="0..1" />
+    <End Role="registro" Type="Self.registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="laboratorio">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="registro">
+        <PropertyRef Name="idLaboratorio" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_registro_materia">
+    <End Role="materia" Type="Self.materia" Multiplicity="0..1" />
+    <End Role="registro" Type="Self.registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="materia">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="registro">
+        <PropertyRef Name="idMateria" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_semestre_carrera">
+    <End Role="carrera" Type="Self.carrera" Multiplicity="0..1" />
+    <End Role="semestre" Type="Self.semestre" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="carrera">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="semestre">
+        <PropertyRef Name="idCarrera" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+  <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <EntityContainer Name="registroLabsModelStoreContainer">
+    <EntitySet Name="carrera" EntityType="Self.carrera" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="detalle_materia" EntityType="Self.detalle_materia" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="detalle_registro" EntityType="Self.detalle_registro" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="docente" EntityType="Self.docente" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="estudiante" EntityType="Self.estudiante" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="laboratorio" EntityType="Self.laboratorio" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="materia" EntityType="Self.materia" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="periodo" EntityType="Self.periodo" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="registro" EntityType="Self.registro" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="semestre" EntityType="Self.semestre" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="usuario" EntityType="Self.usuario" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_carrera_periodo" Association="Self.FK_carrera_periodo">
+      <End Role="periodo" EntitySet="periodo" />
+      <End Role="carrera" EntitySet="carrera" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_materia_estudiante" Association="Self.FK_detalle_materia_estudiante">
+      <End Role="estudiante" EntitySet="estudiante" />
+      <End Role="detalle_materia" EntitySet="detalle_materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_materia_materia" Association="Self.FK_detalle_materia_materia">
+      <End Role="materia" EntitySet="materia" />
+      <End Role="detalle_materia" EntitySet="detalle_materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_registro_docente" Association="Self.FK_detalle_registro_docente">
+      <End Role="docente" EntitySet="docente" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_registro_estudianteRAID" Association="Self.FK_detalle_registro_estudianteRAID">
+      <End Role="estudiante" EntitySet="estudiante" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_registro_registro" Association="Self.FK_detalle_registro_registro">
+      <End Role="registro" EntitySet="registro" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_materia_docente" Association="Self.FK_materia_docente">
+      <End Role="docente" EntitySet="docente" />
+      <End Role="materia" EntitySet="materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_materia_semestre" Association="Self.FK_materia_semestre">
+      <End Role="semestre" EntitySet="semestre" />
+      <End Role="materia" EntitySet="materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_registro_laboratorio" Association="Self.FK_registro_laboratorio">
+      <End Role="laboratorio" EntitySet="laboratorio" />
+      <End Role="registro" EntitySet="registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_registro_materia" Association="Self.FK_registro_materia">
+      <End Role="materia" EntitySet="materia" />
+      <End Role="registro" EntitySet="registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_semestre_carrera" Association="Self.FK_semestre_carrera">
+      <End Role="carrera" EntitySet="carrera" />
+      <End Role="semestre" EntitySet="semestre" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

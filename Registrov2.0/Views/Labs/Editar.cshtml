@@ -1,0 +1,50 @@
+﻿@model Registrov2._0.Models.ViewModels.LaboratorioInsertEdit
+
+@{
+    ViewBag.Title = "Editar Datos Docente";
+}
+<h2 class="tituloPage">@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Editar", "Labs", FormMethod.Post))
+{
+    <div class="row ">
+        <div class="formTable">
+            <div class="row form-group">
+                @Html.HiddenFor(d => d.Id)
+                <div class="col-md-12 ">
+                    @Html.LabelFor(d => d.Nombre)
+                    @Html.TextBoxFor(d => d.Nombre, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(d => d.Nombre, null, new { @class = "red" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-md-6">
+                    @Html.LabelFor(d => d.Capacidad)
+                    @Html.TextBoxFor(d => d.Capacidad, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(d => d.Capacidad, null, new { @class = "red" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(d => d.Subred)
+                    @Html.EditorFor(d => d.Subred, "", new { @class = "form-control", type = "date" })
+                    @Html.ValidationMessageFor(d => d.Subred, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center;padding:5px">
+                <div class="col-md-12" style="">
+                    <input type="submit" class="btn btn-primary btn-block" value="Guardar" />
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center; padding:5px">
+                <div class="col-md-12" style="">
+                    <a class="btn btn-danger btn-block" href="~/Labs/"> Cancelar </a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+}
+

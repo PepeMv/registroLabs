@@ -1,0 +1,43 @@
+@model Registrov2._0.Models.ViewModels.CarreraModeloNuevo
+
+@{ ViewBag.Title = "Nueva Carrera"; }
+
+
+
+<h2 class="tituloPage"> @ViewBag.Title </h2>
+
+@using (Html.BeginForm("Nuevo", "Carrera", FormMethod.Post))
+{
+<div class="row ">
+    <div class="formTable">
+        <div class="row form-group">
+            <div class="col-md-12 ">
+                @Html.LabelFor(d => d.InsertarCarrera.Nombre)
+                @Html.TextBoxFor(d => d.InsertarCarrera.Nombre, "", new { @class = "form-control" })
+                @Html.ValidationMessageFor(d => d.InsertarCarrera.Nombre, null, new { @class = "red" })
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-md-12">
+                @Html.LabelFor(d => d.InsertarCarrera.IdPeriodo)
+                @Html.DropDownListFor(d => d.InsertarCarrera.IdPeriodo, Model.Periodos, new { @class = "form-control" })
+                @Html.ValidationMessageFor(d => d.InsertarCarrera.IdPeriodo, null, new { @class = "red" })
+            </div>
+        </div>
+
+        <div class="row" style="text-align:center; padding:5px">
+            <div class="col-md-12" style="">
+                <input type="submit" class="btn btn-primary btn-block" value="Guardar" />
+            </div>
+        </div>
+
+        <div class="row" style="text-align:center; padding:5px">
+            <div class="col-md-12" style="">
+                <a class="btn btn-danger btn-block" href="~/Carrera/"> Cancelar </a>
+            </div>
+        </div>
+
+
+    </div>
+</div>}
+

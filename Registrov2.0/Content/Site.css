@@ -1,0 +1,65 @@
+.red {
+    color: red;
+}
+
+@media print {
+    #printPageButton {
+        display: none;
+    }
+}
+
+
+/* Style buttons */
+.iconos {
+    background-color: #C2C2C2; /* Blue background */
+    border-radius: 10px; /* Remove borders */
+    color: white; /* White text */
+    padding: 15px; /* Some padding */
+    cursor: pointer; /* Mouse pointer on hover */
+}
+
+    /* Darker background on mouse-over */
+    .iconos:hover {
+        background-color: #FF7A7A;
+    }
+
+
+
+.titulosMenu {
+    font-weight: bold;
+    font-size: 25px;
+    padding-bottom: 20px;
+    text-align:center;
+}
+
+.botonMenu {
+    margin: 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #eee
+}
+
+
+.formTable {
+    max-width: 600px;
+    width: 50%;
+    border-style: solid;
+    border-color: #FF7A7A;
+    margin:auto;
+    padding: 25px;
+    border-radius:10px;
+}
+
+.formTable2 {
+    max-width: 600px;
+    width: 50%;
+    border-style: solid;
+    border-color: #C6C6C6;
+    margin: auto;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.tituloPage {    
+    margin-top:70px;
+}

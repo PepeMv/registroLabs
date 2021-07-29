@@ -1,0 +1,151 @@
+@model Registrov2._0.Models.ViewModels.SemestreModeloNuevo
+@{
+    ViewBag.Title = "Nuevo Semestre";
+}
+
+<h2 class="tituloPage">@ViewBag.Title</h2>
+
+
+
+
+@using (Html.BeginForm("Nuevo", "Semestre", FormMethod.Post))
+{
+    <div class="row ">
+        <div class="formTable">
+            <div class="row form-group">
+                <div class="col-md-12 ">
+                    @Html.LabelFor(d => d.InsertarSemestre.Nombre)
+                    @Html.TextBoxFor(d => d.InsertarSemestre.Nombre, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(d => d.InsertarSemestre.Nombre, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Periodo</label>
+                    @Html.DropDownList("Periodos", Model.Periodos, new { @class = "form-control", id = "cboPeriodos" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <label>Carrera</label>
+                    <select id="cboCarreras" name="cboCarrera" class="form-control"></select>
+                    @Html.TextBoxFor(d => d.InsertarSemestre.IdCarrera, "", new { @class = "form-control d-none hidden", id = "txtCarreraSeleccionada" })
+                    @Html.ValidationMessageFor(d => d.InsertarSemestre.IdCarrera, null, new { @class = "red" })
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center; padding:5px">
+                <div class="col-md-12" style="">
+                    <input type="submit" class="btn btn-primary btn-block" value="Guardar" />
+                </div>
+            </div>
+
+            <div class="row" style="text-align:center; padding:5px">
+                <div class="col-md-12" style="">
+                    <a class="btn btn-danger btn-block" href="~/Semestre/"> Cancelar </a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+}
+
+<div>
+
+    <script>
+
+        //cojo variables
+        //combo de periodos
+        var cboPeriodos = document.getElementById("cboPeriodos");
+        //agrego el evento a change para consultar las carreras del epriodo
+        cboPeriodos.addEventListener("change", consultarCarrerarxPerio);
+
+        //obtengo el valor de carreras
+        var cboCarreras = document.getElementById("cboCarreras");
+        //event para actualizar el valor
+        cboCarreras.addEventListener("change", actulizarCarreraSelecionadaChange);
+
+
+        //obtengo el txt de la carrera selecionada
+        var txtCarreraSeleccionada = document.getElementById("txtCarreraSeleccionada");
+
+
+        consultarCarrerarxPerio();
+
+
+        function consultarCarrerarxPerio() {
+            //debo llenar el dropdownlist
+
+            fetch("@Url.Content("~/Carrera/getCarrerasPorPeriodo")" + "?idPeriodo=" + cboPeriodos.value)
+                .then(function (result) {
+                    if (result.ok) {
+                        return result.json();
+                    }
+                }).then(function (data) {
+                    //console.log(data);
+
+                    //limpio el combo
+                    cboCarreras.innerHTML = "";
+
+                    if (data.length != 0) {
+
+                        actulizarCarreraSelecionada(data[0].Id);
+                        //lleno el combo de carreras
+                        data.forEach(function (element) {
+                            agregarOpcionAlSelect(element.Nombre, element.Id, cboCarreras);
+                        });
+
+                        //aqui consulto enseguida y lleno la tabla
+                        //otro fectch
+
+
+                        //consultarSemestresxCarrera();
+
+                    } else {
+                        //mando alerta de no haber respuesta
+                        Swal.fire(
+                            'Alerta!',
+                            'No se encontraron carreras asociadas con el Periodo',
+                            'info'
+                        );
+
+                        agregarOpcionAlSelect("No hay carreras asociadas", null, cboCarreras);
+                        actulizarCarreraSelecionada(null);
+                        //vacio la tabla previamente cargada
+
+                    }
+
+                });
+        }
+
+
+        function agregarOpcionAlSelect(nombre, value, combo) {
+            let opt = document.createElement("option");
+            opt.appendChild(document.createTextNode(nombre));
+            opt.value = value;
+
+            combo.appendChild(opt);
+        }
+
+
+        function actulizarCarreraSelecionadaChange() {
+            //console.log(cboCarreras.value);
+            txtCarreraSeleccionada.value = cboCarreras.value;
+        }
+
+
+        function actulizarCarreraSelecionada(idCarrera) {
+            //console.log(idCarrera);
+            txtCarreraSeleccionada.value = idCarrera;
+        }
+    </script>
+</div>
+
+
+
+
+
+

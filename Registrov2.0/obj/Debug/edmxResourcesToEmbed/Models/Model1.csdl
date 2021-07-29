@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="registroLabsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="carrera">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="idPeriodo" Type="Int32" />
+    <NavigationProperty Name="periodo" Relationship="Self.FK_carrera_periodo" FromRole="carrera" ToRole="periodo" />
+    <NavigationProperty Name="semestre" Relationship="Self.FK_semestre_carrera" FromRole="carrera" ToRole="semestre" />
+  </EntityType>
+  <EntityType Name="detalle_materia">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="idMateria" Type="Int32" />
+    <Property Name="idEstudiante" Type="Int32" />
+    <NavigationProperty Name="materia" Relationship="Self.FK_detalle_materia_materia" FromRole="detalle_materia" ToRole="materia" />
+    <NavigationProperty Name="estudiante" Relationship="registroLabsModel.FK_detalle_materia_estudiante" FromRole="detalle_materia" ToRole="estudiante" />
+  </EntityType>
+  <EntityType Name="laboratorio">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="capacidad" Type="Int32" />
+    <NavigationProperty Name="registro" Relationship="Self.FK_registro_laboratorio" FromRole="laboratorio" ToRole="registro" />
+    <Property Name="subred" Type="Int32" />
+  </EntityType>
+  <EntityType Name="materia">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="idDocente" Type="Int32" />
+    <Property Name="idSemestre" Type="Int32" />
+    <NavigationProperty Name="detalle_materia" Relationship="Self.FK_detalle_materia_materia" FromRole="materia" ToRole="detalle_materia" />
+    <NavigationProperty Name="semestre" Relationship="Self.FK_materia_semestre" FromRole="materia" ToRole="semestre" />
+    <NavigationProperty Name="registro" Relationship="Self.FK_registro_materia" FromRole="materia" ToRole="registro" />
+    <NavigationProperty Name="docente" Relationship="registroLabsModel.FK_materia_docente" FromRole="materia" ToRole="docente" />
+  </EntityType>
+  <EntityType Name="periodo">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="fechaInicio" Type="DateTime" Precision="0" />
+    <Property Name="fechaFin" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="carrera" Relationship="Self.FK_carrera_periodo" FromRole="periodo" ToRole="carrera" />
+  </EntityType>
+  <EntityType Name="registro">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="fechaInicio" Type="DateTime" Precision="3" />
+    <Property Name="fechaFin" Type="DateTime" Precision="3" />
+    <Property Name="tema" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="idLaboratorio" Type="Int32" />
+    <Property Name="idMateria" Type="Int32" />
+    <NavigationProperty Name="laboratorio" Relationship="Self.FK_registro_laboratorio" FromRole="registro" ToRole="laboratorio" />
+    <NavigationProperty Name="materia" Relationship="Self.FK_registro_materia" FromRole="registro" ToRole="materia" />
+    <Property Name="observacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="detalle_registro" Relationship="registroLabsModel.FK_detalle_registro_registro" FromRole="registro" ToRole="detalle_registro" />
+  </EntityType>
+  <EntityType Name="semestre">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="idCarrera" Type="Int32" />
+    <NavigationProperty Name="carrera" Relationship="Self.FK_semestre_carrera" FromRole="semestre" ToRole="carrera" />
+    <NavigationProperty Name="materia" Relationship="Self.FK_materia_semestre" FromRole="semestre" ToRole="materia" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <Association Name="FK_carrera_periodo">
+    <End Role="periodo" Type="Self.periodo" Multiplicity="0..1" />
+    <End Role="carrera" Type="Self.carrera" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="periodo">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="carrera">
+        <PropertyRef Name="idPeriodo" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_semestre_carrera">
+    <End Role="carrera" Type="Self.carrera" Multiplicity="0..1" />
+    <End Role="semestre" Type="Self.semestre" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="carrera">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="semestre">
+        <PropertyRef Name="idCarrera" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_materia_materia">
+    <End Role="materia" Type="Self.materia" Multiplicity="0..1" />
+    <End Role="detalle_materia" Type="Self.detalle_materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="materia">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_materia">
+        <PropertyRef Name="idMateria" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_registro_laboratorio">
+    <End Role="laboratorio" Type="Self.laboratorio" Multiplicity="0..1" />
+    <End Role="registro" Type="Self.registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="laboratorio">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="registro">
+        <PropertyRef Name="idLaboratorio" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_materia_semestre">
+    <End Role="semestre" Type="Self.semestre" Multiplicity="0..1" />
+    <End Role="materia" Type="Self.materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="semestre">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="materia">
+        <PropertyRef Name="idSemestre" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_registro_materia">
+    <End Role="materia" Type="Self.materia" Multiplicity="0..1" />
+    <End Role="registro" Type="Self.registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="materia">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="registro">
+        <PropertyRef Name="idMateria" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="registroLabsEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="carrera" EntityType="Self.carrera" />
+    <EntitySet Name="detalle_materia" EntityType="Self.detalle_materia" />
+    <EntitySet Name="laboratorio" EntityType="Self.laboratorio" />
+    <EntitySet Name="materia" EntityType="Self.materia" />
+    <EntitySet Name="periodo" EntityType="Self.periodo" />
+    <EntitySet Name="registro" EntityType="Self.registro" />
+    <EntitySet Name="semestre" EntityType="Self.semestre" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+    <AssociationSet Name="FK_carrera_periodo" Association="Self.FK_carrera_periodo">
+      <End Role="periodo" EntitySet="periodo" />
+      <End Role="carrera" EntitySet="carrera" />
+    </AssociationSet>
+    <AssociationSet Name="FK_semestre_carrera" Association="Self.FK_semestre_carrera">
+      <End Role="carrera" EntitySet="carrera" />
+      <End Role="semestre" EntitySet="semestre" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_materia_materia" Association="Self.FK_detalle_materia_materia">
+      <End Role="materia" EntitySet="materia" />
+      <End Role="detalle_materia" EntitySet="detalle_materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_registro_laboratorio" Association="Self.FK_registro_laboratorio">
+      <End Role="laboratorio" EntitySet="laboratorio" />
+      <End Role="registro" EntitySet="registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_materia_semestre" Association="Self.FK_materia_semestre">
+      <End Role="semestre" EntitySet="semestre" />
+      <End Role="materia" EntitySet="materia" />
+    </AssociationSet>
+    <AssociationSet Name="FK_registro_materia" Association="Self.FK_registro_materia">
+      <End Role="materia" EntitySet="materia" />
+      <End Role="registro" EntitySet="registro" />
+    </AssociationSet>
+    <EntitySet Name="docente" EntityType="registroLabsModel.docente" />
+    <AssociationSet Name="FK_materia_docente" Association="registroLabsModel.FK_materia_docente">
+      <End Role="docente" EntitySet="docente" />
+      <End Role="materia" EntitySet="materia" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(registroLabsModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(registroLabsModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+    <EntitySet Name="estudiante" EntityType="registroLabsModel.estudiante" />
+    <AssociationSet Name="FK_detalle_materia_estudiante" Association="registroLabsModel.FK_detalle_materia_estudiante">
+      <End Role="estudiante" EntitySet="estudiante" />
+      <End Role="detalle_materia" EntitySet="detalle_materia" />
+    </AssociationSet>
+    <EntitySet Name="detalle_registro" EntityType="registroLabsModel.detalle_registro" />
+    <AssociationSet Name="FK_detalle_registro_docente" Association="registroLabsModel.FK_detalle_registro_docente">
+      <End Role="docente" EntitySet="docente" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_registro_estudianteRAID" Association="registroLabsModel.FK_detalle_registro_estudianteRAID">
+      <End Role="estudiante" EntitySet="estudiante" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <AssociationSet Name="FK_detalle_registro_registro" Association="registroLabsModel.FK_detalle_registro_registro">
+      <End Role="registro" EntitySet="registro" />
+      <End Role="detalle_registro" EntitySet="detalle_registro" />
+    </AssociationSet>
+    <EntitySet Name="usuario" EntityType="registroLabsModel.usuario" />
+  </EntityContainer>
+  <EntityType Name="docente">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cedula" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="nombre" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="apellido" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="materia" Relationship="registroLabsModel.FK_materia_docente" FromRole="docente" ToRole="materia" />
+    <NavigationProperty Name="detalle_registro" Relationship="registroLabsModel.FK_detalle_registro_docente" FromRole="docente" ToRole="detalle_registro" />
+  </EntityType>
+  <Association Name="FK_materia_docente">
+    <End Type="registroLabsModel.docente" Role="docente" Multiplicity="0..1" />
+    <End Type="registroLabsModel.materia" Role="materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="docente">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="materia">
+        <PropertyRef Name="idDocente" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <EntityType Name="estudiante">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cedula" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="detalle_materia" Relationship="registroLabsModel.FK_detalle_materia_estudiante" FromRole="estudiante" ToRole="detalle_materia" />
+    <NavigationProperty Name="detalle_registro" Relationship="registroLabsModel.FK_detalle_registro_estudianteRAID" FromRole="estudiante" ToRole="detalle_registro" />
+  </EntityType>
+  <Association Name="FK_detalle_materia_estudiante">
+    <End Type="registroLabsModel.estudiante" Role="estudiante" Multiplicity="0..1" />
+    <End Type="registroLabsModel.detalle_materia" Role="detalle_materia" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="estudiante">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_materia">
+        <PropertyRef Name="idEstudiante" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="detalle_registro">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="idRegistro" Type="Int32" />
+    <Property Name="observacion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="idEstudiante" Type="Int32" />
+    <Property Name="idDocente" Type="Int32" />
+    <NavigationProperty Name="docente" Relationship="registroLabsModel.FK_detalle_registro_docente" FromRole="detalle_registro" ToRole="docente" />
+    <NavigationProperty Name="estudiante" Relationship="registroLabsModel.FK_detalle_registro_estudianteRAID" FromRole="detalle_registro" ToRole="estudiante" />
+    <NavigationProperty Name="registro" Relationship="registroLabsModel.FK_detalle_registro_registro" FromRole="detalle_registro" ToRole="registro" />
+  </EntityType>
+  <Association Name="FK_detalle_registro_docente">
+    <End Type="registroLabsModel.docente" Role="docente" Multiplicity="0..1" />
+    <End Type="registroLabsModel.detalle_registro" Role="detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="docente">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idDocente" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_registro_estudianteRAID">
+    <End Type="registroLabsModel.estudiante" Role="estudiante" Multiplicity="0..1" />
+    <End Type="registroLabsModel.detalle_registro" Role="detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="estudiante">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idEstudiante" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_detalle_registro_registro">
+    <End Type="registroLabsModel.registro" Role="registro" Multiplicity="0..1" />
+    <End Type="registroLabsModel.detalle_registro" Role="detalle_registro" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="registro">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="detalle_registro">
+        <PropertyRef Name="idRegistro" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="usuario">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="70" FixedLength="false" Unicode="false" />
+    <Property Name="mail" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+  </EntityType>
+</Schema>

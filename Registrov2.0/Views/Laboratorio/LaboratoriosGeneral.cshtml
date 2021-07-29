@@ -1,0 +1,707 @@
+@model Registrov2._0.Models.ViewModels.UnionModeloListayConsulta
+@{
+    ViewBag.Title = "Informacion de Laboratorios";
+
+}
+
+@if (ViewBag.exito != null)
+{
+    <script>
+        var mensaje = '@ViewBag.exito';
+        //swal("Bien echo!", mensaje, "success");
+        Swal.fire(
+            'Bien echo!',
+            mensaje,
+            'success'
+        );
+    </script>
+}
+
+@if (ViewBag.error != null)
+{
+    <script>
+    var mensaje = '@ViewBag.error';
+    //swal("Error!", mensaje, "error");
+        Swal.fire(
+            'Error!',
+            mensaje,
+            'error'
+        );
+    </script>
+}
+
+
+
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;" data-keyboard="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    X
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    <strong>  Registro de Laboratorio </strong>
+                </h4>
+                @using (Html.BeginForm("nuevoRegistro", "Laboratorio", FormMethod.Post))
+                {
+                    <div class="modal-body">
+                        <div id="modal-content">
+
+                            <div class="row" style="align-content:center">
+                                <hr />
+                                <div class="col-md-12" >
+                                    <strong>Parametros del registro</strong>
+                                    <br />
+                                    <select name="select" class="form-control" id="selectParametrosIngreso">
+                                        <option value="fecha" selected>Por fecha</option>
+                                        <option value="periodo">Por periodo</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row" style="align-content:center">
+                                <hr />
+                                <div class="col-md-12" id="fechaDiv">
+                                    <div class="form-group">
+                                        <strong>Fecha del registro</strong>
+                                        <br />
+                                        @Html.TextBoxFor(d => d.Registro.Fecha, "", new { @class = "form-control", type = "date", id = "dtpInsert" })
+                                        @Html.ValidationMessageFor(d => d.Registro.Fecha, null, new { @class = "red" })
+                                        <!-- <input type="date" value="yyyy-MM-dd" id="dtpInsert" class="form-control" required />-->
+                                    </div>
+                                </div>
+
+                                <div id="periodo">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <strong>Periodo</strong>
+                                            <br />
+                                            @Html.DropDownListFor(d => d.Registro.idPeriodo, Model.ListaPeriodos, new { @class = "form-control  w-100 ", id = "cboPeriodosInsert" })
+                                            <!-- <input type="date" value="yyyy-MM-dd" id="dtpInsert" class="form-control" required />-->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <strong>Dia del periodo</strong>
+                                            <br />
+                                            @Html.DropDownListFor(d => d.Registro.DiaSemana, Model.ListaDias, new { @class = "form-control  w-100 ", id = "cboDiasInsert" })
+                                            <!-- <input type="date" value="yyyy-MM-dd" id="dtpInsert" class="form-control" required />-->
+                                        </div>
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+
+                            <div class="row" style="align-content:center">
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <strong>Hora inicio</strong>
+                                        <br />
+                                        @Html.TextBoxFor(d => d.Registro.horaInicio, "", new { @class = "form-control", type = "time", id = "inicioTime" })
+                                        @Html.ValidationMessageFor(d => d.Registro.horaInicio, null, new { @class = "red" })
+                                        <!-- <input type="time" id="inicioTime" name="inicioTime" min="07:00" max="19:00" required class="form-control" />-->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <strong>Hora finlizacion</strong>
+                                        <br />
+                                        @Html.TextBoxFor(d => d.Registro.horaFin, "", new { @class = "form-control", type = "time", id = "finTime" })
+                                        @Html.ValidationMessageFor(d => d.Registro.horaFin, null, new { @class = "red" })
+                                        <!-- <input type="time" id="finTime" name="finTime" min="08:00" max="20:00" required class="form-control" /> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="align-content:center">
+                                <hr />
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <strong>Docente</strong>
+                                        @Html.DropDownList("Docentes", Model.ListaDocentes, new { @class = "form-control  w-100 ", id = "cboDocentesInsert" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <strong>Materia</strong>
+                                        <select id="cbomateria" name="cbomateria" class="form-control"></select>
+                                        @Html.TextBoxFor(d => d.Registro.IdMateria, "", new { @class = "form-control d-none hidden", id = "txtMateriaSeleccionada" })
+                                        @Html.ValidationMessageFor(d => d.Registro.IdMateria, null, new { @class = "red" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="align-content:center">
+                                <hr />
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <strong>Laboratorio</strong>
+                                        <!--@Html.DropDownList("Laboratorios", Model.ListaLaboratorios, new { @class = "form-control ", id = "cboLaboratoriosInsert" })-->
+                                        @Html.DropDownListFor(d => d.Registro.IdLaboratorio, Model.ListaLaboratorios, new { @class = "form-control ", id = "cboLaboratoriosInsert" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 ">
+                                    <div class="form-group ">
+                                        <strong>Tema</strong>
+                                        <br />
+                                        @Html.TextBoxFor(d => d.Registro.Tema, "", new { @class = "form-control", type = "text", id = "temaRegistro" })
+                                        @Html.ValidationMessageFor(d => d.Registro.Tema, null, new { @class = "red" })
+                                        <!-- <input type="text" id="temaRegistro" name="temaRegistro" class="form-control" />-->
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="align-content:center">
+
+                                <div class="col-md-12 ">
+                                    <div class="form-group ">
+                                        <strong>Observacion</strong>
+                                        <br />
+                                        @Html.TextBoxFor(d => d.Registro.Observacion, "", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(d => d.Registro.Observacion, null, new { @class = "red" })
+                                        <!-- <input type="text" id="observacionRegistro" name="observacionRegistro" class="form-control" /> -->
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row" style="align-content:center">
+                                <hr />
+                                <div class="col-md-6" style="">
+                                    <input type="submit" class="btn btn-primary btn-block" value="Guardar" id="botonInsertarRegistro" />
+                                </div>
+                                <div class="col-md-6" style="">
+                                    <button type="button" class="btn btn-danger btn-block" data-dismiss="modal" aria-hidden="true"> Cancelar </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h1 class="display-5" style="margin-top:70px;">@ViewBag.Title</h1>
+
+
+
+
+<div class="row p-4 m-4">
+    <div class="col-md-6 ">
+        <div class="form-group">
+            <strong>Laboratorio</strong>
+            @Html.DropDownList("Laboratorios", Model.ListaLaboratorios, new { @class = "form-control ", id = "cboLaboratorios" })
+        </div>
+    </div>
+    <div class="col-md-6 ">
+        <div class="form-group">
+            <strong>Fecha</strong>
+            <br />
+            <input type="date" value="yyyy-MM-dd" id="dtp" class="form-control" />
+        </div>
+    </div>
+
+    <div class="col-md-12 m-4 p-4" style="text-align:right">
+        <button id="BotonConsultarHorario" class="btn btn-info"> Consultar</button>
+    </div>
+
+    <div class="col-md-12 m-4 p-4" style="text-align:right; padding-top:10px; padding-bottom:10px">
+        <a id="botonIngresarRegistro" class="btn btn-primary p-4" data-toggle="modal" href="#myModal"> Ingresar Horario </a>
+    </div>
+
+</div>
+
+<div class="row">
+    <a class="btn btn-warning" href="~/Administracion/Index"> <i class="fas fa-arrow-left"> Menu</i></a>
+</div>
+
+
+<div class="row m-4 p-4">
+    <div class="col-md-12 p-4 m-4">
+        <h2 class="display-4 text-center">Dia!</h2>
+    </div>
+
+    <div class="col-md-12 p-4 m-4 text-center">
+        <table class="table table-bordered " style="table-layout:fixed">
+            <thead class="text-center">
+                <tr>
+                    <th scope="col" class="text-center">7H00 - 8H00 AM</th>
+                    <th scope="col" class="text-center">8H00 - 9H00 AM</th>
+                    <th scope="col" class="text-center">9H00 - 10H00 AM</th>
+                    <th scope="col" class="text-center">10H00 - 11H00 AM</th>
+                    <th scope="col" class="text-center">11H00 - 12H00 AM</th>
+                    <th scope="col" class="text-center">12H00 - 13H00 PM</th>
+                </tr>
+            </thead>
+            <tbody id="tablaManana">
+                <tr style="height: 150px;">
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-12 p-4 m-4">
+        <h2 class="display-4 text-center">Tarde!</h2>
+    </div>
+
+    <div class="col-md-12 p-4 m-4 text-center">
+        <table class="table table-bordered " style="table-layout:fixed">
+            <thead class="text-center">
+                <tr>
+                    <th scope="col" class="text-center">14H00 - 15H00 PM</th>
+                    <th scope="col" class="text-center">15H00 - 16H00 PM</th>
+                    <th scope="col" class="text-center">16H00 - 17H00 PM</th>
+                    <th scope="col" class="text-center">17H00 - 18H00 PM</th>
+                    <th scope="col" class="text-center">18H00 - 19H00 PM</th>
+                    <th scope="col" class="text-center">19H00 - 20H00 PM</th>
+                </tr>
+            </thead>
+            <tbody id="tablaTarde">
+                <tr style="height: 150px; ">
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+
+<script>
+    //jalo el componente de la fecha para la consulta
+    var dataPicker = document.getElementById("dtp");
+    //jalo el componente select de labs para la consulta
+    var cboLaboratorios = document.getElementById("cboLaboratorios");
+    //añado el evento al boton de click
+    var boton = document.getElementById("BotonConsultarHorario");
+    boton.addEventListener("click", consultar);
+
+
+    ////////////consultr materias
+    var cboDocentesModal = document.getElementById("cboDocentesInsert");
+    //agrego al evento en change
+    cboDocentesModal.addEventListener("change", consultarMaterial);
+    //Ejecuto al inicio del modal
+    consultarMaterial();
+    //actulizarMateriaSelecionada();
+    /////////ingreso de registro
+
+    //obtengo los conponentes para obtener los datos
+    var cboDocentesInsert = document.getElementById("cboDocentesInsert");
+    var cboMateriasInsert = document.getElementById("cbomateria");
+    var cboLaboratoriosInsert = document.getElementById("cboLaboratoriosInsert");
+    //jalo el componente fecha
+    var dtpFecha = document.getElementById("dtpInsert");
+    //agrego el evento para al cambiar de fecha me vuelva a consultar las materias que ese docente data esa fecha
+    dtpFecha.addEventListener("change", consultarMaterial);
+
+    var timeInicio = document.getElementById("inicioTime");
+    var timeFin = document.getElementById("finTime");
+    var temaRegistro = document.getElementById("temaRegistro");
+    var observacionRegistro = document.getElementById("observacionRegistro");
+
+    //obtenfo el boton para el insert
+    var btnInsertarRegistro = document.getElementById("botonInsertarRegistro");
+    //btnInsertarRegistro.addEventListener("click", insertarRegistoLaboratorios);
+
+    //aagrego el evento change a cbo materia para que se me actulice el text box
+    cboMateriasInsert.addEventListener("change", actulizarMateriaSelecionadaChange);
+
+    //tomo el componenteque tiene la materia seleccinada
+    var txtMateriaSelect = document.getElementById("txtMateriaSeleccionada");
+
+    //tomo el valor del select para ver si ingreo por fecha o por periodo
+    var selectFechaoPeriodo = document.getElementById("selectParametrosIngreso");
+    //le pongo el evento onclick
+    selectFechaoPeriodo.addEventListener("change", mostrarFechaoPeriodo);
+    
+    
+
+    //tomo el componente de dias
+    var cboDiasInsert = document.getElementById("cboDiasInsert");
+
+    //llamo la funcion para que en un inicio me de la distincion carga condicional de componentes
+    mostrarFechaoPeriodo();
+
+    function actulizarMateriaSelecionadaChange() {
+        //console.log(cboMateriasInsert.value);
+        txtMateriaSelect.value = cboMateriasInsert.value;
+    }
+
+    function consultar() {
+       //console.log('@Model.ListaLaboratorios[0].Text');
+       // console.log(dataPicker.value);
+
+        //var tempAlerta = "pepe";
+
+
+        var tablaManana = document.getElementById("tablaManana");
+        tablaManana.innerHTML = `<tr style="height: 150px;">
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                </tr>`;
+
+        var tablaTarde = document.getElementById("tablaTarde");
+        tablaTarde.innerHTML = `<tr style="height: 150px;">
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                    <td style="vertical-align:middle" class="bg-info">Libre</td>
+                </tr>`;
+
+
+        fetch("@Url.Content("~/Laboratorio/getHorariosxLabyFecha")" + "?idLab=" + cboLaboratorios.value + "&fechaInicio=" + dataPicker.value + "T01:00:00.000" + "&fechaFin=" + dataPicker.value + "T23:00:00.000")
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                data.forEach(function (element) {
+                    //console.log(element.fechaInicio.split(" "));
+
+                    var splitFechaInicio = element.fechaInicio.split(" ");
+                    //console.log(splitFechaInicio);
+                    var splitFecha = splitFechaInicio[0].split("/");
+                    var splitHora = splitFechaInicio[1].split(":");
+
+                    var fechaTemporal = new Date(splitFecha[2], splitFecha[1], splitFecha[0], 13, 0, 0);
+
+                    var fechaTemporalInicio = new Date(splitFecha[2], splitFecha[1], splitFecha[0], splitHora[0], splitHora[1], splitHora[2]);
+                    //console.log(fechaTemporal);
+                    //console.log(fechaTemporalInicio);
+                    //console.log(Date.parse(fechaTemporal));
+
+                    var splitFechaFin = element.fechaFin.split(" ");
+
+                    var diferenciaHoras = restarHoras(splitFechaInicio[1], splitFechaFin[1]);
+                    //console.log(diferenciaHoras);
+
+                    if (fechaTemporalInicio < fechaTemporal) {
+                        //console.log('dia');
+                        //console.log(splitFechaInicio);
+                        var filaManana = document.getElementById("tablaManana").rows[0];
+
+                        if (splitFechaInicio[1] == "7:00:00") {
+                            var celdaInicio = 0;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+                        } else if (splitFechaInicio[1] == "8:00:00") {
+                            var celdaInicio = 1;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+                        } else if (splitFechaInicio[1] == "9:00:00") {
+                            var celdaInicio = 2;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "10:00:00") {
+                            var celdaInicio = 3;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+                        } else if (splitFechaInicio[1] == "11:00:00") {
+                            var celdaInicio = 4;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+                        } else if (splitFechaInicio[1] == "12:00:00") {
+                            var celdaInicio = 5;
+                            renderizarCelda(diferenciaHoras, filaManana, element, celdaInicio);
+
+                        }
+
+                    } else {
+                        //console.log('tarde');
+                        var filaTarde = document.getElementById("tablaTarde").rows[0];
+
+                        if (splitFechaInicio[1] == "14:00:00") {
+                            var celdaInicio = 0;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "15:00:00") {
+                            var celdaInicio = 1;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "16:00:00") {
+                            var celdaInicio = 2;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "17:00:00") {
+                            var celdaInicio = 3;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "18:00:00") {
+                            var celdaInicio = 4;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+
+                        } else if (splitFechaInicio[1] == "19:00:00") {
+                            var celdaInicio = 5;
+                            renderizarCelda(diferenciaHoras, filaTarde, element, celdaInicio);
+
+                        }
+                    }
+                })
+            })
+    }
+
+    function actulizarMateriaSelecionada( idMateria) {
+        txtMateriaSelect.value = idMateria;
+    }
+
+    function consultarMaterial() {
+        try {
+            //console.log(dtpFecha.value);
+            var fechaTemporal = dtpFecha.value;
+        } catch {
+            var fechaTemporal = "";
+        }
+
+
+        fetch("@Url.Content("~/Materia/getMateriaxDocente")" + "?idDocente=" + cboDocentesModal.value + "&fechaIngreso=" + fechaTemporal)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            })
+            .then(function (data) {
+
+                if (data.Status == "error") {
+                    Swal.fire(
+                        'Error!',
+                        data.Mensaje,
+                        'error'
+                    )
+                } else if (data.Status == "info") {
+                    Swal.fire(
+                        'Alto!',
+                        data.Mensaje,
+                        'info'
+                    )
+                }
+
+                //console.log(data);
+                var cboMaterias = document.getElementById("cbomateria");
+                cboMaterias.innerHTML = "";
+                actulizarMateriaSelecionada(data[0].Value);
+                data.forEach(function (element) {
+                    let opt = document.createElement("option");
+                    opt.appendChild(document.createTextNode(element.Text));
+                    opt.value = element.Value;
+
+                    cboMaterias.appendChild(opt);
+                })
+            })
+    }
+
+
+    //tomo el combo de periodos
+    var cboPeriodosInsert = document.getElementById("cboPeriodosInsert");
+    //adredo el evento que se ejecute solo cuando cambie el periodo
+    cboPeriodosInsert.addEventListener("change", consultarMaterialxPeriodo);
+
+    function consultarMaterialxPeriodo() {
+        var cboPeriodosInsertValor = cboPeriodosInsert.value;
+
+        fetch("@Url.Content("~/Materia/getMateriaxDocenteyPeriodo")" + "?idDocente=" + cboDocentesModal.value + "&idPeriodo=" + cboPeriodosInsertValor)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            })
+            .then(function (data) {
+
+                if (data.Status == "error") {
+                    Swal.fire(
+                        'Error!',
+                        data.Mensaje,
+                        'error'
+                    )
+                } else if (data.Status == "info") {
+                    Swal.fire(
+                        'Alto!',
+                        data.Mensaje,
+                        'info'
+                    )
+                }
+
+                //console.log(data);
+                var cboMaterias = document.getElementById("cbomateria");
+                cboMaterias.innerHTML = "";
+                actulizarMateriaSelecionada(data[0].Value);
+                data.forEach(function (element) {
+                    let opt = document.createElement("option");
+                    opt.appendChild(document.createTextNode(element.Text));
+                    opt.value = element.Value;
+
+                    cboMaterias.appendChild(opt);
+                })
+            })
+    }
+
+    function restarHoras(inicio, fin) {
+
+        inicioMinutos = parseInt(inicio.substr(3, 2));
+        inicioHoras = parseInt(inicio.substr(0, 2));
+
+        finMinutos = parseInt(fin.substr(3, 2));
+        finHoras = parseInt(fin.substr(0, 2));
+
+        transcurridoMinutos = finMinutos - inicioMinutos;
+        transcurridoHoras = finHoras - inicioHoras;
+
+        if (transcurridoMinutos < 0) {
+            transcurridoHoras--;
+            transcurridoMinutos = 60 + transcurridoMinutos;
+        }
+
+        horas = transcurridoHoras.toString();
+        minutos = transcurridoMinutos.toString();
+
+        if (horas.length < 2) {
+            horas = "0" + horas;
+        }
+
+        if (horas.length < 2) {
+            horas = "0" + horas;
+        }
+
+        var horaMinutos = [parseInt(horas), parseInt(minutos)];
+
+        return horaMinutos;
+
+    }
+
+    function renderizarCelda(diferenciaHoras, filaTardeManana, element, celdaInicio ) {
+        for (var i = 0; i < diferenciaHoras[0]; i++) {
+            var celda = filaTardeManana.cells[celdaInicio + i]
+            celda.innerHTML = `<span class=" p-2 h5"> <strong> ` +
+                element.nombreMateria + `</strong> </span> <br />
+                                                    <span class=" p-2 text-muted h6 ">` + element.nombreDocente + `</span>`;
+            if (i == 0) {
+                celda.innerHTML = celda.innerHTML + `<div class="row" style="text-align:center; padding-top:5px">
+                                                        <div class="col-md-6 " >
+                                                            <input type='button' class="btn btn-danger" onclick='eliminarRegistroHoras(`+ element.id + `)' value='Eliminar'/>
+                                                        </div>
+                                                        <div class="col-md-6 " >
+                                                            <a id="" class="btn btn-success p-4" href="@Url.Content("~/Laboratorio/ReporteAsistencias/")${element.id}" > Reporte </a>
+                                                         </div>
+                                                    </div>`;
+            }
+        }
+    }
+
+    function eliminarRegistroHoras(id) {
+        //console.log(id);
+
+        Swal.fire({
+            title: "Eliminar?",
+            text: `Se eliminara permanentemente!`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, eliminar!",
+        }).then((result) => {
+            if (result.value) {
+                //dispatch(eliminarCategoriaAction(id));
+                //console.log('acepte');
+
+                fetch("@Url.Content("~/Registro/eliminarRegistro")" + "?idRegistro=" + id)
+                    .then(function (result) {
+                        if (result.ok) {
+                            return result.json();
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Intente nuevamente!',
+                                'error'
+                            )
+                        }
+
+                    }).then(function (data) {
+                        if (data.Status == "success") {
+                            Swal.fire(
+                                'Bien echo!',
+                                data.Mensaje,
+                                'success'
+                            ).then((result) => {
+                                if (result.value) {
+                                    consultar();
+                                } else {
+                                    consultar();
+                                }
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.Mensaje,
+                                'error'
+                            );
+                        }
+                    });
+            }
+        });
+    }
+
+    function mostrarFechaoPeriodo() {
+        var valorselectFechaoPeriodo = selectFechaoPeriodo.value;
+        
+
+        var fecha = document.getElementById("fechaDiv");
+        var periodo = document.getElementById("periodo");
+
+        if (valorselectFechaoPeriodo == "fecha") {
+            periodo.style.display = "block";
+            periodo.style.display = "none";
+
+            fecha.style.display = "block";
+            fecha.style.display = "initial";
+
+            cboDiasInsert.value = "0";
+        } else {
+            fecha.style.display = "block";
+            fecha.style.display = "none";
+
+            periodo.style.display = "block";
+            periodo.style.display = "initial";
+            consultarMaterialxPeriodo();
+
+            dtpFecha.value = null;
+        }
+    }
+
+
+
+</script>
+

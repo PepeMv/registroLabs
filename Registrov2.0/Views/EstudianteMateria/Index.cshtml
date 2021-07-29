@@ -1,0 +1,520 @@
+@model Registrov2._0.Models.ViewModels.EstudianteMateriaModeloIndex
+@{
+    ViewBag.Title = "Asigancion de Estudiantes a Materias";
+}
+
+
+@if (ViewBag.exito != null)
+{
+<script>
+        var mensaje = '@ViewBag.exito';
+        //swal("Bien echo!", mensaje, "success");
+        Swal.fire(
+            'Bien echo!',
+            mensaje,
+            'success'
+        );
+</script>
+}
+
+@if (ViewBag.error != null)
+{
+    <script>
+    var mensaje = '@ViewBag.error';
+    //swal("Error!", mensaje, "error");
+        Swal.fire(
+            'Error!',
+            mensaje,
+            'error'
+        );
+    </script>
+}
+
+
+<h2 class="tituloPage">@ViewBag.Title</h2>
+
+<div class="row" style="padding:10px;">
+    <a class="btn btn-warning" href="~/Administracion/Index"> <i class="fas fa-arrow-left"> Menu</i></a>
+</div>
+
+<div class="row" style="margin:10px;">
+    <div class="col-md-6 formTable">
+        <div class="row">
+            <div class="col-md-12"> <h3>Informacion del Estudiante</h3><hr /> </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.DropDownList("Estudiantes", Model.Estudiantes, new { @class = "form-control ", id = "cboEstudiantes" })
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.DropDownList("Periodos", Model.Periodos, new { @class = "form-control ", id = "cboPeriodosEstudiantes" })
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12"> <h4>Materias del Estudiante</h4><hr /> </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table" style=" margin:auto">
+                    <thead>
+                        <tr>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Semestre
+                            </th>
+                            <th style="text-align:center">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="materiasEstudianteTable">
+                        <tr style="text-align:center;">
+                            <td colspan="2" style="padding:20px">
+                                No hay <strong> Materias </strong>registradas para el Estudiante!
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 formTable2" >
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Materias Dsiponibles</h3><hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div>
+                    <strong>Periodo</strong>
+                </div>
+                <div class="form-group">
+                    @Html.DropDownList("Periodos", Model.Periodos, new { @class = "form-control ", id = "cboPeriodos" })
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div>
+                    <strong>Carrera</strong>
+                </div>
+                <div class="form-group">
+                    <select id="cboCarreras" name="cboCarrera" class="form-control"></select>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div>
+                    <strong>Semestre</strong>
+                </div>
+                <div class="form-group">
+                    <select id="cboSemestre" name="cboSemestre" class="form-control"></select>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table" style="max-width:90%; margin:auto">
+                    <thead>
+                        <tr>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Docente
+                            </th>
+                            <th style="text-align:center">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="materiasTablaBody">
+                        <tr style="text-align:center;">
+                            <td colspan="2" style="padding:20px">
+                                No hay <strong> Materias </strong>registradas para el semestre seleccionado!
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    //cojo valores de loc ombos estudiante y periodo tmbn debo agregar los eventos
+    var cboEstudiantes = document.getElementById("cboEstudiantes");
+    cboEstudiantes.addEventListener("change", consultarMateriasxEstudianteyPeriodo);
+
+    var cboPeriodosEstudiantes = document.getElementById("cboPeriodosEstudiantes");
+    cboPeriodosEstudiantes.addEventListener("change", consultarMateriasxEstudianteyPeriodo);
+
+
+    //tabla de materias del estudiante
+    var materiasEstudianteTable = document.getElementById("materiasEstudianteTable");
+
+
+    //llamo al inicio la funcion
+    consultarMateriasxEstudianteyPeriodo();
+
+
+    function consultarMateriasxEstudianteyPeriodo() {
+
+        //limpio la tabla
+        materiasEstudianteTable.innerHTML = ``;
+
+
+        fetch("@Url.Content("~/EstudianteMateria/getMateriasxEstudianteyPeriodo")" + "?idEstudiante=" + cboEstudiantes.value + "&idPeriodo=" + cboPeriodosEstudiantes.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                if (data.length != 0) {
+                    data.forEach(function (element) {
+                        renderizarFilaMateriasEstudiantes(element);
+                    })
+                } else {
+                    materiasEstudianteTable.innerHTML = `<tr style="text-align:center;">
+                    <td colspan="2" style="padding:20px">
+                        No hay <strong> Materias </strong>registradas para el Estudiante!
+                    </td>
+                </tr>`;
+                }
+
+            });
+    }
+
+    function renderizarFilaMateriasEstudiantes(item) {
+        materiasEstudianteTable.innerHTML = materiasEstudianteTable.innerHTML + `<tr > <td> ` + item.NombreMateria + ` </td>
+                                                                                        <td> ` + item.NombreSemestre + ` </td>
+                                        <td style="text-align:center">
+                                                <input type='button' class="btn btn-danger"  onclick='eliminarMateriaEstudiante(`+ item.idDetalleMateria + `)' value='Eliminar' />
+                                        </td> </tr>`;
+    }
+
+    function eliminarMateriaEstudiante(id) {
+        Swal.fire({
+            title: "Eliminar?",
+            text: `Se eliminara permanentemente!`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, eliminar!",
+        }).then((result) => {
+            if (result.value) {
+                //dispatch(eliminarCategoriaAction(id));
+                //console.log('acepte');
+
+                fetch("@Url.Content("~/EstudianteMateria/EliminarMateriaEstudiante")" + "?idDetalleMateria=" + id)
+                    .then(function (result) {
+                        if (result.ok) {
+                            return result.json();
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Intente nuevamente!',
+                                'error'
+                            )
+                        }
+
+                    }).then(function (data) {
+                        if (data.Status == "success") {
+                            Swal.fire(
+                                'Bien echo!',
+                                data.Mensaje,
+                                'success'
+                            ).then((result) => {
+                                if (result.value) {
+                                    consultarMateriasxEstudianteyPeriodo();
+                                } else {
+                                    consultarMateriasxEstudianteyPeriodo();
+                                }
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.Mensaje,
+                                'error'
+                            );
+                        }
+                    });
+            }
+        });
+    }
+
+    ////////////////////////////////////////////////////parte de la derecha elejir materias disponibles
+    //cojo variables
+    //combo de periodos
+    var cboPeriodos = document.getElementById("cboPeriodos");
+    //agrego el evento a change para consultar las carreras del epriodo
+    cboPeriodos.addEventListener("change", consultarCarrerarxPerio);
+
+
+    //combo de Carreras
+    var cboCarreras = document.getElementById("cboCarreras");
+    //agrego el evento consultar semestres cuando cambie la carrera
+    cboCarreras.addEventListener("change", consultarSemestresxCarrera);
+
+
+    //combo semestre
+    var cboSemestre = document.getElementById("cboSemestre");
+    //agrego el evento consultar materias x semestre en el change
+    cboSemestre.addEventListener("change", consultarMateriasxSemestre);
+
+
+
+
+
+
+    //tabla de semestres
+    var materiasTablaBody = document.getElementById("materiasTablaBody");
+
+
+    //ejecuto la funcion de consultarCarrera
+    consultarCarrerarxPerio();
+
+    function consultarCarrerarxPerio() {
+        //debo llenar el dropdownlist
+
+        fetch("@Url.Content("~/Carrera/getCarrerasPorPeriodo")" + "?idPeriodo=" + cboPeriodos.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                //limpio el combo
+                cboCarreras.innerHTML = "";
+
+                if (data.length != 0) {
+
+                    //lleno el combo de carreras
+                    data.forEach(function (element) {
+                        agregarOpcionAlSelect(element.Nombre, element.Id, cboCarreras);
+                    });
+
+                    //aqui consulto enseguida y lleno la tabla
+                    //otro fectch
+
+
+                    consultarSemestresxCarrera();
+
+                } else {
+                    //mando alerta de no haber respuesta
+                    Swal.fire(
+                        'Alerta!',
+                        'No se encontraron carreras asociadas con el Periodo',
+                        'info'
+                    );
+
+                    agregarOpcionAlSelect("No hay carreras asociadas", null, cboCarreras);
+
+                    //vacio la tabla previamente cargada
+                    semestresTablaBody.innerHTML = `<tr style="text-align:center;">
+                    <td colspan="2" style="padding:20px">
+                        No hay <strong> Semestres </strong>registrados para la carrera seleccionada!
+                    </td>
+                </tr>`;
+                }
+
+            });
+    }
+
+    function consultarSemestresxCarrera() {
+
+        //limpio la tabla
+        cboSemestre.innerHTML = ``;
+
+
+        fetch("@Url.Content("~/Semestre/getSemestresxCarrera")" + "?idCarrera=" + cboCarreras.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                if (data.length != 0) {
+                    data.forEach(function (element) {
+                        agregarOpcionAlSelect(element.Nombre, element.Id, cboSemestre);
+                    });
+
+                    //consulto y lleno la tabla
+                    consultarMateriasxSemestre();
+
+                } else {
+                    Swal.fire(
+                        'Alerta!',
+                        'No se encontraron semestres asociadas con la Carrera',
+                        'info'
+                    );
+
+                    agregarOpcionAlSelect("No hay semestres asociadas", null, cboSemestre);
+                    materiasTablaBody.innerHTML = `<tr style="text-align:center;">
+                    <td colspan="2" style="padding:20px">
+                        No hay <strong> Materias </strong>registradas para el semestre seleccionado!
+                    </td>
+                </tr>`;
+                }
+
+            });
+    }
+
+    function consultarMateriasxSemestre() {
+
+        materiasTablaBody.innerHTML = ``;
+
+        fetch("@Url.Content("~/Materia/getMateriasxSemestre")" + "?idSemestre=" + cboSemestre.value)
+            .then(function (result) {
+                if (result.ok) {
+                    return result.json();
+                }
+            }).then(function (data) {
+                //console.log(data);
+
+                if (data.length != 0) {
+                    data.forEach(function (element) {
+                        renderizarFilaSemestre(element);
+                    })
+                } else {
+                    materiasTablaBody.innerHTML = `<tr style="text-align:center;">
+                    <td colspan="2" style="padding:20px">
+                        No hay <strong> Materias </strong>registradas para el semestre seleccionado!
+                    </td>
+                </tr>`;
+                }
+
+            });
+    }
+
+    function agregarOpcionAlSelect(nombre, value, combo) {
+        let opt = document.createElement("option");
+        opt.appendChild(document.createTextNode(nombre));
+        opt.value = value;
+
+        combo.appendChild(opt);
+    }
+
+    function renderizarFilaSemestre(item) {
+
+        materiasTablaBody.innerHTML = materiasTablaBody.innerHTML + `<tr > <td> ` + item.Nombre + ` </td>
+                                                                <td> ${item.Docente ? item.Docente : '<strong>Docente no asignado! <strong>'} </td>
+                    <td style="text-align:center">
+                        <input type='button' class="btn btn-success"   onclick='agregarMateriaEstudiante(`+ JSON.stringify(item) +`)' value='Agregar' />
+                    </td> </tr>`;
+    }
+
+    function agregarMateriaEstudiante(materia) {
+        //console.log(materia.Nombre);
+
+        Swal.fire({
+            title: materia.Nombre,
+            html: `Se le agregara al Estudiante <strong>${cboEstudiantes.options[cboEstudiantes.selectedIndex].text}!</strong>`,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, agregar!",
+        }).then((result) => {
+            if (result.value) {
+                //dispatch(eliminarCategoriaAction(id));
+                //console.log('acepte');
+
+                fetch("@Url.Content("~/EstudianteMateria/insertarMaterialEstudiante")" + "?idMateria=" + materia.Id + "&idEstudiante=" + cboEstudiantes.value)
+                    .then(function (result) {
+                        if (result.ok) {
+                            return result.json();
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Intente nuevamente!',
+                                'error'
+                            )
+                        }
+
+                    }).then(function (data) {
+                        if (data.Status == "success") {
+                            Swal.fire(
+                                'Bien echo!',
+                                data.Mensaje,
+                                'success'
+                            ).then((result) => {
+                                if (result.value) {
+                                    consultarMateriasxEstudianteyPeriodo();
+                                } else {
+                                    consultarMateriasxEstudianteyPeriodo();
+                                }
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.Mensaje,
+                                'error'
+                            );
+                        }
+                    });
+            }
+        });
+    }
+
+
+</script>

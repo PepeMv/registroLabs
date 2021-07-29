@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="fe787171d556463ba053381ec24a0b57" Name="Diagram1" ZoomLevel="86">
+        <EntityTypeShape EntityType="registroLabsModel.carrera" Width="1.5" PointX="2.5" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.detalle_materia" Width="1.5" PointX="6.625" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.laboratorio" Width="1.5" PointX="11.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.materia" Width="1.5" PointX="7.125" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.periodo" Width="1.5" PointX="0.5" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.registro" Width="1.5" PointX="9" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.semestre" Width="1.5" PointX="4.5" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="registroLabsModel.sysdiagrams" Width="1.5" PointX="0.875" PointY="5.75" IsExpanded="true" />
+        <AssociationConnector Association="registroLabsModel.FK_carrera_periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="registroLabsModel.FK_semestre_carrera" ManuallyRouted="false" />
+        <AssociationConnector Association="registroLabsModel.FK_detalle_materia_materia" ManuallyRouted="false" />
+        <AssociationConnector Association="registroLabsModel.FK_registro_laboratorio" ManuallyRouted="false" />
+        <AssociationConnector Association="registroLabsModel.FK_materia_semestre" ManuallyRouted="false" />
+        <AssociationConnector Association="registroLabsModel.FK_registro_materia" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="registroLabsModel.docente" Width="1.5" PointX="12.875" PointY="2.25" />
+        <AssociationConnector Association="registroLabsModel.FK_materia_docente" />
+        <EntityTypeShape EntityType="registroLabsModel.estudiante" Width="1.5" PointX="8.875" PointY="6" />
+        <AssociationConnector Association="registroLabsModel.FK_detalle_materia_estudiante" />
+        <EntityTypeShape EntityType="registroLabsModel.detalle_registro" Width="1.5" PointX="12.125" PointY="4.75" />
+        <AssociationConnector Association="registroLabsModel.FK_detalle_registro_docente" />
+        <AssociationConnector Association="registroLabsModel.FK_detalle_registro_estudianteRAID" />
+        <AssociationConnector Association="registroLabsModel.FK_detalle_registro_registro" />
+        <EntityTypeShape EntityType="registroLabsModel.usuario" Width="1.5" PointX="2.5" PointY="1" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
